@@ -1,0 +1,24 @@
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Route, Routes } from "react-router";
+import App from "./app";
+import Login from "./pages/login";
+import AuthProvider from "./context/AuthProvider";
+import Dashboard from "./pages/dashboard";
+import NavBar from "./components/Navbar";
+import PermissionDashboard from "./pages/permissionDashboard";
+
+const root = document.getElementById("root");
+
+ReactDOM.createRoot(root).render(
+  <BrowserRouter>
+    <AuthProvider>
+      <NavBar/>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/permissions" element={<PermissionDashboard/>} />
+      </Routes>
+    </AuthProvider>
+  </BrowserRouter >,
+);
