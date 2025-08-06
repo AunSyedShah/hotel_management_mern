@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import RoomItem from "./RoomItem";
 import RoomForm from "./RoomForm";
+import { Container, Card } from "../ui";
 
 export default function RoomList({ permissions }) {
   const [rooms, setRooms] = useState([]);
@@ -36,27 +37,50 @@ export default function RoomList({ permissions }) {
   };
 
   return (
-  <div className="space-y-6">
-    <h2 className="text-2xl font-bold text-center mb-4">Manage Rooms</h2>
+    <div className="min-h-screen bg-base-200">
+      <Container maxWidth="7xl" className="py-8">
+        <div className="space-y-8">
+          <Card title="Room Management" className="text-center">
+            <p className="text-base-content/70">Manage hotel rooms, availability, and pricing</p>
+          </Card>
 
-    {permissions.create_room && (
-      <RoomForm mode={editData ? "edit" : "create"} initialValues={editData} onSuccess={handleSuccess} />
-    )}
+          {permissions.create_room && (
+            <RoomForm 
+              mode={editData ? "edit" : "create"} 
+              initialValues={editData} 
+              onSuccess={handleSuccess} 
+            />
+          )}
 
-    {permissions.read_room && (
-      <div className="space-y-4">
-        {rooms.map(room => (
-          <RoomItem
-            key={room._id}
-            room={room}
-            onEdit={setEditData}
-            onDelete={handleDelete}
-            permissions={permissions}
-          />
-        ))}
-      </div>
-    )}
-  </div>
-);
-
+          {permissions.read_room && (
+            <Card title={`All Rooms (${rooms.length})`}>
+              {rooms.length > 0 ? (
+                <div className="space-y-4">
+                  {rooms.map(room => (
+                    <RoomItem
+                      key={room._id}
+                      room={room}
+                      onEdit={setEditData}
+                      onDelete={handleDelete}
+                      permissions={permissions}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="text-6xl opacity-20">🏨</div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-base-content/70">No rooms available</h3>
+                      <p className="text-sm text-base-content/50">Start by creating your first room</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          )}
+        </div>
+      </Container>
+    </div>
+  );
 }

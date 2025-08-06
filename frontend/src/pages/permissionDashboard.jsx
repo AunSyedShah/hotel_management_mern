@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuthContext } from "../context/AuthProvider";
+import { Container, Card, Select, Button, Badge, Checkbox } from "../components/ui";
 
 export default function PermissionDashboard() {
   const [permissions, setPermissions] = useState([]);
   const [editing, setEditing] = useState(null);
   const [newRole, setNewRole] = useState("");
+  const {token} = useAuthContext();
 
   const allRoles = ["admin", "manager", "receptionist", "housekeeping", "guest"];
   const allActions = [
@@ -18,7 +21,11 @@ export default function PermissionDashboard() {
 
   const loadPermissions = async () => {
     try {
-      const res = await axios.get("/api/permissions");
+      const res = await axios.get("/api/permissions", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setPermissions(res.data);
     } catch (err) {
       console.error("Failed to fetch permissions:", err);
@@ -70,54 +77,94 @@ export default function PermissionDashboard() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-bold">Permission Management</h2>
+    <div className="min-h-screen bg-base-200">
+      <Container maxWidth="7xl" className="py-8">
+        <div className="space-y-8">
+          <Card title="Permission Management" className="text-center">
+            <p className="text-base-content/70">Configure role-based permissions for the hotel management system</p>
+          </Card>
 
-      {/* Create New Permission */}
-      <form onSubmit={handleCreate} className="flex gap-4 items-center">
-        <select
-          value={newRole}
-          onChange={(e) => setNewRole(e.target.value)}
-          className="select select-bordered"
-        >
-          <option value="">Select role</option>
-          {allRoles.map(role => (
-            <option key={role} value={role}>{role}</option>
-          ))}
-        </select>
-        <button type="submit" className="btn btn-primary btn-sm">Create Permission</button>
-      </form>
+          {/* Create New Permission */}
+          <Card title="Create New Role Permission">
+            <form onSubmit={handleCreate} className="flex flex-col sm:flex-row gap-4 items-end">
+              <div className="flex-1">
+                <Select
+                  label="Select Role"
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value)}
+                  options={allRoles}
+                  placeholder="Choose a role"
+                  required
+                />
+              </div>
+              <Button type="submit" variant="primary" size="md">
+                Create Permission
+              </Button>
+            </form>
+          </Card>
 
-      {/* Permissions List */}
-      <div className="space-y-6">
-        {permissions.map((perm, index) => (
-          <div key={perm.role} className="border rounded-lg p-4 shadow-md bg-white">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold capitalize">{perm.role}</h3>
-              {editing === perm.role ? (
-                <button onClick={() => savePermissions(index)} className="btn btn-success btn-sm">Save</button>
-              ) : (
-                <button onClick={() => setEditing(perm.role)} className="btn btn-primary btn-sm">Edit</button>
-              )}
-            </div>
+          {/* Permissions List */}
+          <div className="space-y-6">
+            {permissions.map((perm, index) => (
+              <Card key={perm.role} title={`${perm.role.charAt(0).toUpperCase() + perm.role.slice(1)} Permissions`}>
+                <div className="space-y-6">
+                  <div className="flex justify-between items-center">
+                    <Badge variant="primary" size="lg" className="capitalize">
+                      {perm.role}
+                    </Badge>
+                    {editing === perm.role ? (
+                      <Button 
+                        onClick={() => savePermissions(index)} 
+                        variant="success" 
+                        size="sm"
+                      >
+                        Save Changes
+                      </Button>
+                    ) : (
+                      <Button 
+                        onClick={() => setEditing(perm.role)} 
+                        variant="info" 
+                        size="sm"
+                      >
+                        Edit Permissions
+                      </Button>
+                    )}
+                  </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-              {allActions.map(action => (
-                <label key={action} className="flex items-center gap-2 capitalize">
-                  <input
-                    type="checkbox"
-                    className="checkbox"
-                    checked={!!perm.permissions[action]}
-                    disabled={editing !== perm.role}
-                    onChange={() => togglePermission(index, action)}
-                  />
-                  {action.replace(/_/g, " ")}
-                </label>
-              ))}
-            </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {allActions.map(action => (
+                      <Checkbox
+                        key={action}
+                        name={action}
+                        label={action.replace(/_/g, ' ')}
+                        checked={!!perm.permissions[action]}
+                        onChange={() => togglePermission(index, action)}
+                        disabled={editing !== perm.role}
+                        variant="primary"
+                        className="text-sm"
+                      />
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            ))}
+
+            {permissions.length === 0 && (
+              <Card>
+                <div className="text-center py-8">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="text-6xl opacity-20">🔐</div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-base-content/70">No permissions configured</h3>
+                      <p className="text-sm text-base-content/50">Start by creating permissions for a role</p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            )}
           </div>
-        ))}
-      </div>
+        </div>
+      </Container>
     </div>
   );
 }

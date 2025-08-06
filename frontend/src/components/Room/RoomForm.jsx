@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import axios from "axios";
+import { Card, Input, Select, Button, Textarea } from "../ui";
 
 export default function RoomForm({ initialValues, onSuccess, mode = "create" }) {
   const formik = useFormik({
@@ -26,73 +27,85 @@ export default function RoomForm({ initialValues, onSuccess, mode = "create" }) 
     },
   });
 
+  const roomTypes = [
+    { value: "single", label: "Single" },
+    { value: "double", label: "Double" },
+    { value: "suite", label: "Suite" }
+  ];
+
+  const roomStatuses = [
+    { value: "available", label: "Available" },
+    { value: "occupied", label: "Occupied" },
+    { value: "cleaning", label: "Cleaning" },
+    { value: "maintenance", label: "Maintenance" }
+  ];
+
   return (
-    <form onSubmit={formik.handleSubmit} className="card bg-base-100 shadow-md p-6 space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input
-          name="roomNumber"
+    <Card title={`${mode === "edit" ? "Update" : "Create"} Room`}>
+      <form onSubmit={formik.handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Input
+            label="Room Number"
+            name="roomNumber"
+            placeholder="Enter room number"
+            value={formik.values.roomNumber}
+            onChange={formik.handleChange}
+            required
+          />
+
+          <Input
+            label="Price"
+            name="price"
+            type="number"
+            placeholder="Enter price per night"
+            value={formik.values.price}
+            onChange={formik.handleChange}
+            required
+          />
+
+          <Input
+            label="Floor"
+            name="floor"
+            type="number"
+            placeholder="Enter floor number"
+            value={formik.values.floor}
+            onChange={formik.handleChange}
+          />
+
+          <Select
+            label="Room Type"
+            name="type"
+            value={formik.values.type}
+            onChange={formik.handleChange}
+            options={roomTypes}
+            required
+          />
+
+          <Select
+            label="Status"
+            name="status"
+            value={formik.values.status}
+            onChange={formik.handleChange}
+            options={roomStatuses}
+            className="md:col-span-1"
+          />
+        </div>
+
+        <Textarea
+          label="Description"
+          name="description"
+          placeholder="Enter room description (optional)"
+          value={formik.values.description}
           onChange={formik.handleChange}
-          value={formik.values.roomNumber}
-          placeholder="Room Number"
-          className="input input-bordered w-full"
-          required
+          rows={3}
         />
 
-        <input
-          type="number"
-          name="price"
-          onChange={formik.handleChange}
-          value={formik.values.price}
-          placeholder="Price"
-          className="input input-bordered w-full"
-          required
-        />
-
-        <input
-          type="number"
-          name="floor"
-          onChange={formik.handleChange}
-          value={formik.values.floor}
-          placeholder="Floor"
-          className="input input-bordered w-full"
-        />
-
-        <select
-          name="type"
-          onChange={formik.handleChange}
-          value={formik.values.type}
-          className="select select-bordered w-full"
-          required
-        >
-          <option value="single">Single</option>
-          <option value="double">Double</option>
-          <option value="suite">Suite</option>
-        </select>
-
-        <select
-          name="status"
-          onChange={formik.handleChange}
-          value={formik.values.status}
-          className="select select-bordered w-full"
-        >
-          <option value="available">Available</option>
-          <option value="occupied">Occupied</option>
-          <option value="cleaning">Cleaning</option>
-          <option value="maintenance">Maintenance</option>
-        </select>
-      </div>
-
-      <textarea
-        name="description"
-        onChange={formik.handleChange}
-        value={formik.values.description}
-        placeholder="Description"
-        className="textarea textarea-bordered w-full"
-      />
-
-      <button type="submit" className="btn btn-primary w-full md:w-auto">
-        {mode === "edit" ? "Update" : "Create"} Room
-      </button>
-    </form>
+        <div className="flex justify-end">
+          <Button type="submit" variant="primary">
+            {mode === "edit" ? "Update" : "Create"} Room
+          </Button>
+        </div>
+      </form>
+    </Card>
   );
 }

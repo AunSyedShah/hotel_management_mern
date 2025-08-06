@@ -1,11 +1,12 @@
 // routes/permissionRoutes.js
 import express from "express";
 import { Permission } from "../models/Permission";
+import { verifyAdmin } from "../utils/verifyToken";
 
 export const permissionRouter = express.Router();
 
 // Get all permissions
-permissionRouter.get("/", async (req, res) => {
+permissionRouter.get("/", verifyAdmin, async (req, res) => {
   try {
     const all = await Permission.find();
     res.json(all);

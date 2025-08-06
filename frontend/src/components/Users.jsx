@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Badge } from "./ui";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
@@ -17,44 +18,47 @@ export default function Users() {
   }, []); // only run once on mount
 
   return (
-    <div className="overflow-x-auto p-4">
+    <div className="overflow-x-auto">
       <table className="table table-zebra w-full">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Created At</th>
+            <th className="text-left">#</th>
+            <th className="text-left">Name</th>
+            <th className="text-left">Email</th>
+            <th className="text-left">Role</th>
+            <th className="text-left">Status</th>
+            <th className="text-left">Created At</th>
           </tr>
         </thead>
         <tbody>
           {users.length > 0 ? (
             users.map((user, index) => (
-              <tr key={user._id}>
-                <td>{index + 1}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
+              <tr key={user._id} className="hover">
+                <td className="font-medium">{index + 1}</td>
+                <td className="font-semibold">{user.name}</td>
+                <td className="text-sm opacity-70">{user.email}</td>
                 <td>
-                  <span className="badge badge-info">{user.role}</span>
+                  <Badge variant="info">{user.role}</Badge>
                 </td>
                 <td>
-                  <span
-                    className={`badge ${
-                      user.status === "active" ? "badge-success" : "badge-error"
-                    }`}
+                  <Badge 
+                    variant={user.status === "active" ? "success" : "error"}
                   >
                     {user.status}
-                  </span>
+                  </Badge>
                 </td>
-                <td>{new Date(user.createdAt).toLocaleString()}</td>
+                <td className="text-sm opacity-70">
+                  {new Date(user.createdAt).toLocaleString()}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="6" className="text-center text-gray-500">
-                No users found.
+              <td colSpan="6" className="text-center text-base-content/60 py-8">
+                <div className="flex flex-col items-center space-y-2">
+                  <span className="text-lg">No users found</span>
+                  <span className="text-sm">Users will appear here once available</span>
+                </div>
               </td>
             </tr>
           )}

@@ -1,27 +1,70 @@
+import { Card, Badge, Button } from "../ui";
+
 export default function RoomItem({ room, onEdit, onDelete, permissions }) {
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'available': return 'success';
+      case 'occupied': return 'warning';
+      case 'cleaning': return 'info';
+      case 'maintenance': return 'error';
+      default: return 'neutral';
+    }
+  };
+
   return (
-    <div className="card bg-white shadow-md p-4 border border-base-300">
+    <Card compact className="hover:shadow-xl transition-shadow duration-200">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+        <div className="space-y-2">
           <h3 className="text-xl font-semibold text-primary">Room #{room.roomNumber}</h3>
-          <p className="text-sm">Type: <span className="capitalize">{room.type}</span></p>
-          <p className="text-sm">Status: <span className="capitalize">{room.status}</span></p>
-          <p className="text-sm">Floor: {room.floor}</p>
-          <p className="text-sm">Price: ${room.price}</p>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Type:</span>
+              <Badge variant="neutral" size="sm" className="capitalize">
+                {room.type}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-medium">Status:</span>
+              <Badge variant={getStatusColor(room.status)} size="sm" className="capitalize">
+                {room.status}
+              </Badge>
+            </div>
+            <div>
+              <span className="font-medium">Floor:</span> {room.floor}
+            </div>
+            <div>
+              <span className="font-medium">Price:</span> 
+              <span className="text-primary font-semibold ml-1">${room.price}</span>
+            </div>
+          </div>
           {room.description && (
-            <p className="text-sm text-gray-600 mt-1">Note: {room.description}</p>
+            <p className="text-sm text-base-content/70 mt-2 italic">
+              "{room.description}"
+            </p>
           )}
         </div>
 
-        <div className="space-x-2">
+        <div className="flex gap-2">
           {permissions.update_room && (
-            <button onClick={() => onEdit(room)} className="btn btn-sm btn-info">Edit</button>
+            <Button 
+              onClick={() => onEdit(room)} 
+              variant="info" 
+              size="sm"
+            >
+              Edit
+            </Button>
           )}
           {permissions.delete_room && (
-            <button onClick={() => onDelete(room._id)} className="btn btn-sm btn-error">Delete</button>
+            <Button 
+              onClick={() => onDelete(room._id)} 
+              variant="error" 
+              size="sm"
+            >
+              Delete
+            </Button>
           )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

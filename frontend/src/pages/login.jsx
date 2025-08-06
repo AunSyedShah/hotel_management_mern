@@ -2,10 +2,11 @@ import { useFormik } from 'formik';
 import axios from 'axios';
 import { useAuthContext } from '../context/AuthProvider';
 import { useNavigate } from 'react-router';
+import { Card, Input, Button, Container } from '../components/ui';
 
 export default function Login() {
 
-  const {user, setUser} = useAuthContext();
+  const {user, setUser, setToken} = useAuthContext();
   const navigate = useNavigate();
 
   const formik = useFormik({
@@ -24,6 +25,7 @@ export default function Login() {
         const response = await axios.post('/api/auth/login', values);
         console.log(response.data.user);
         setUser(response.data.user);
+        setToken(response.data.token);
         navigate("/dashboard")
       } catch (err) {
         
@@ -33,51 +35,43 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center">
-      <div className="container mx-auto px-4">
-        <div className="max-w-md mx-auto bg-base-100 shadow-md rounded-lg p-8">
-          <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
-          <form onSubmit={formik.handleSubmit}>
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Email</span>
-              </label>
-              <input
-                type="email"
-                name="email"
-                className="input input-bordered w-full"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.email}
-              />
-              {formik.touched.email && formik.errors.email && (
-                <span className="text-error text-sm mt-1">{formik.errors.email}</span>
-              )}
-            </div>
+      <Container maxWidth="md">
+        <Card title="Login" className="max-w-md mx-auto">
+          <form onSubmit={formik.handleSubmit} className="space-y-6">
+            <Input
+              label="Email"
+              name="email"
+              type="email"
+              placeholder="Enter your email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.email && formik.errors.email}
+              required
+            />
 
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
-              <input
-                type="password"
-                name="password"
-                className="input input-bordered w-full"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.password}
-              />
-              {formik.touched.password && formik.errors.password && (
-                <span className="text-error text-sm mt-1">{formik.errors.password}</span>
-              )}
-            </div>
+            <Input
+              label="Password"
+              name="password"
+              type="password"
+              placeholder="Enter your password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.password && formik.errors.password}
+              required
+            />
 
-
-            <button type="submit" className="btn btn-primary w-full">
+            <Button 
+              type="submit" 
+              variant="primary" 
+              className="w-full"
+            >
               Login
-            </button>
+            </Button>
           </form>
-        </div>
-      </div>
+        </Card>
+      </Container>
     </div>
   );
 }
