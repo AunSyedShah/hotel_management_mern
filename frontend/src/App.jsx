@@ -1,7 +1,7 @@
 import RoomList from './components/Room/RoomList'
 import { Button } from './components/ui'
 
-function App() {
+function App(){
 
   return (
     <>

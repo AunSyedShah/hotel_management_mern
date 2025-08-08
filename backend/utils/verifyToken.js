@@ -32,7 +32,7 @@ function verifyAdmin(req, res, next){
         }
         next();
     } catch (error) {
-        return res.json({
+        return res.status(401).json({
             error: error.message
         })
     }

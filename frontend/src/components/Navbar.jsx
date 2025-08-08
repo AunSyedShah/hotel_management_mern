@@ -3,7 +3,7 @@ import { Button } from "./ui";
 import { useAuthContext } from "../context/AuthProvider";
 
 export default function NavBar() {
-    const { user, setUser } = useAuthContext();
+    const { user, logout } = useAuthContext();
     return (
         <div className="navbar bg-base-100 shadow-sm">
             <div className="navbar-start">
@@ -19,7 +19,8 @@ export default function NavBar() {
                             user ? (
                                 <div>
                                     <li><Link to="/dashboard">Dashboard</Link></li>
-                                    <li><Button onClick={() => setUser(null)}>Logout</Button></li>
+                                    <li><Link to="/rooms/status">Room Status</Link></li>
+                                    <li><Button onClick={logout}>Logout</Button></li>
                                 </div>
                             ) : (
                                 <li><Link to="/login">Login</Link></li>

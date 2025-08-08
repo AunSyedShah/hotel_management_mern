@@ -24,8 +24,14 @@ export default function Login() {
       try {
         const response = await axios.post('/api/auth/login', values);
         console.log(response.data.user);
+        // Update context
         setUser(response.data.user);
         setToken(response.data.token);
+        // Note: AuthProvider syncs to localStorage; this is an extra safeguard.
+        try {
+          localStorage.setItem('auth_user', JSON.stringify(response.data.user));
+          localStorage.setItem('auth_token', response.data.token);
+        } catch (_) {}
         navigate("/dashboard")
       } catch (err) {
         

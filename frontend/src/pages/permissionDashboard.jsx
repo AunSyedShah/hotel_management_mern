@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuthContext } from "../context/AuthProvider";
+import { useNavigate } from "react-router";
 import { Container, Card, Select, Button, Badge, Checkbox } from "../components/ui";
 
 export default function PermissionDashboard() {
+  const navigate = useNavigate();
   const [permissions, setPermissions] = useState([]);
   const [editing, setEditing] = useState(null);
   const [newRole, setNewRole] = useState("");
-  const {token} = useAuthContext();
+  const { user, token } = useAuthContext();
 
   const allRoles = ["admin", "manager", "receptionist", "housekeeping", "guest"];
   const allActions = [
@@ -15,17 +17,27 @@ export default function PermissionDashboard() {
     "create_room", "read_room", "update_room", "delete_room"
   ];
 
+  // Only admins can access this page
   useEffect(() => {
-    loadPermissions();
-  }, []);
+    if (user === null) {
+      // Not logged in: send to login
+      navigate('/login', { replace: true });
+      return;
+    }
+    if (user && user.role !== 'admin') {
+      // Logged in but not admin: send to dashboard
+      navigate('/dashboard', { replace: true });
+      return;
+    }
+    if (user && user.role === 'admin') {
+      loadPermissions();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const loadPermissions = async () => {
     try {
-      const res = await axios.get("/api/permissions", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  const res = await axios.get("/api/permissions");
       setPermissions(res.data);
     } catch (err) {
       console.error("Failed to fetch permissions:", err);
